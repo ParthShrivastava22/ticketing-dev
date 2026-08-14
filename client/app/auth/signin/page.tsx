@@ -4,19 +4,19 @@ import AuthForm from "@/components/auth-form";
 import { useRequest } from "@/hooks/use-request";
 import { useRouter } from "next/navigation";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   const router = useRouter();
 
   const { doRequest } = useRequest({
-    url: "/api/users/signup",
+    url: "/api/users/signin",
     method: "post",
     onSuccess: () => {
-      console.log("Signup successful!");
+      console.log("Signin successful!");
       router.push("/landing");
     },
   });
 
-  const handleSignUp = async (email: string, password: string) => {
+  const handleSignIn = async (email: string, password: string) => {
     await doRequest({
       email,
       password,
@@ -25,10 +25,10 @@ export default function SignUpPage() {
 
   return (
     <AuthForm
-      title="Create an account"
-      description="Enter your email and password to create your account."
-      buttonText="Sign up"
-      onSubmit={handleSignUp}
+      title="Welcome back"
+      description="Enter your email and password to sign in."
+      buttonText="Sign in"
+      onSubmit={handleSignIn}
     />
   );
 }

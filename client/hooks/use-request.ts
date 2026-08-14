@@ -6,14 +6,17 @@ import { toast } from "sonner";
 interface UseRequestProps {
   url: string;
   method: Method;
-  body: any;
   onSuccess?: (data: any) => void;
 }
 
-export function useRequest({ url, method, body, onSuccess }: UseRequestProps) {
-  const doRequest = async () => {
+export function useRequest({ url, method, onSuccess }: UseRequestProps) {
+  const doRequest = async (body?: any) => {
     try {
-      const response = await axios({ method, url, data: body });
+      const response = await axios({
+        method,
+        url,
+        data: body,
+      });
 
       if (onSuccess) {
         onSuccess(response.data);
