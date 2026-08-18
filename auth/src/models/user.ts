@@ -1,4 +1,4 @@
-import mongoose, { type ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Password } from "../services/password.js";
 
 // An interface that describes properties required to create a new user

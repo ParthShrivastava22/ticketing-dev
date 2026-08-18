@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: assets-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: assets
   template:
     metadata:
       labels:
-        app: auth
+        app: assets
     spec:
       containers:
-        - name: auth
-          image: asia-south1-docker.pkg.dev/ticketing-dev-500306/ticketing/auth
+        - name: assets
+          image: asia-south1-docker.pkg.dev/ticketing-dev-500306/ticketing/assets
           env:
             - name: JWT_KEY
               valueFrom:
@@ -22,7 +22,7 @@ spec:
                   name: jwt-secret
                   key: jwt_key
             - name: MONGO_URI
-              value: "mongodb://auth-mongo-serv:27017/auth"
+              value: "mongodb://assets-mongo-serv:27017/assets"
           resources:
             requests:
               cpu: "250m"
@@ -34,12 +34,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-serv
+  name: assets-serv
 spec:
   selector:
-    app: auth
+    app: assets
   ports:
-    - name: auth
+    - name: assets
       protocol: TCP
       port: 3000
       targetPort: 3000

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assets-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assets-mongo
+  template:
+    metadata:
+      labels:
+        app: assets-mongo
+    spec:
+      containers:
+        - name: assets-mongo
+          image: mongo
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1024Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: assets-mongo-serv
+spec:
+  selector:
+    app: assets-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

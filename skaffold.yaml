@@ -18,6 +18,14 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
+    - image: asia-south1-docker.pkg.dev/ticketing-dev-500306/ticketing/assets
+      context: assets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
     - image: asia-south1-docker.pkg.dev/ticketing-dev-500306/ticketing/client
       context: client
       docker:

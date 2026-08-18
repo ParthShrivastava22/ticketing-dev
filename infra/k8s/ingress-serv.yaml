@@ -17,6 +17,13 @@ spec:
                 name: auth-serv
                 port:
                   number: 3000
+          - path: /api/assets/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: assets-serv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: ImplementationSpecific
             backend:

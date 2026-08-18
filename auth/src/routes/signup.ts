@@ -1,7 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { validateRequest } from "../middleware/validate-request.js";
-import { BadRequestError } from "../errors/bad-request-error.js";
+import { validateRequest, BadRequestError } from "@digitalassetps/common";
 import { z } from "zod";
 import { User } from "../models/user.js";
 import jwt from "jsonwebtoken";

@@ -1,11 +1,15 @@
 import express from "express";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
-import { currentUserRouter } from "./routes/currentUser.js";
-import { signinRouter } from "./routes/signin.js";
-import { signoutRouter } from "./routes/signout.js";
-import { signupRouter } from "./routes/signup.js";
-import { errorHandler, NotFoundError } from "@digitalassetps/common";
+import {
+  errorHandler,
+  NotFoundError,
+  currentUser,
+} from "@digitalassetps/common";
+import { createAssetRouter } from "./routes/new";
+import { showAssetRouter } from "./routes/show";
+import { indexRouter } from "./routes";
+import { updateAssetRouter } from "./routes/update";
 
 const app = express();
 app.set("trust proxy", true);
@@ -18,10 +22,11 @@ app.use(
   }),
 );
 
-app.use(currentUserRouter);
-app.use(signinRouter);
-app.use(signoutRouter);
-app.use(signupRouter);
+app.use(currentUser);
+app.use(createAssetRouter);
+app.use(showAssetRouter);
+app.use(indexRouter);
+app.use(updateAssetRouter);
 
 app.all("/{*splat}", async (req, res) => {
   throw new NotFoundError();

@@ -1,10 +1,9 @@
 import express from "express";
 import type { Request, Response } from "express";
-import { BadRequestError } from "../errors/bad-request-error.js";
 import { User } from "../models/user.js";
 import { Password } from "../services/password.js";
 import { z } from "zod";
-import { validateRequest } from "../middleware/validate-request.js";
+import { validateRequest, BadRequestError } from "@digitalassetps/common";
 import jwt from "jsonwebtoken";
 
 const signInSchema = z.object({
