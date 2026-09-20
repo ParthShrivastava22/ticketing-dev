@@ -31,3 +31,10 @@ spec:
                 name: client-serv
                 port:
                   number: 3000
+          - path: /api/orders/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: orders-serv
+                port:
+                  number: 3000
