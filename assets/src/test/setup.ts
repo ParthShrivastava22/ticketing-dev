@@ -6,9 +6,11 @@ declare global {
   var signin: () => string[];
 }
 
+jest.mock("../nats-wrapper");
 let mongo: any;
 
 beforeAll(async () => {
+  jest.clearAllMocks();
   process.env.JWT_KEY = "astagfirullah";
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();

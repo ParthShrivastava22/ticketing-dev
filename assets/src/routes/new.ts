@@ -3,6 +3,8 @@ import type { Request, Response } from "express";
 import { requireAuth, validateRequest } from "@digitalassetps/common";
 import { z } from "zod";
 import { Asset } from "../models/asset";
+import { AssetCreatedPublisher } from "../events/publishers/asset-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -24,6 +26,16 @@ router.post(
     });
 
     await asset.save();
+
+    const js = natsWrapper.client;
+
+    const publisher = new AssetCreatedPublisher(js);
+    await publisher.publish({
+      id: asset.id,
+      title: asset.title,
+      price: asset.price,
+      userId: asset.userId,
+    });
 
     res.status(201).send(asset);
   },

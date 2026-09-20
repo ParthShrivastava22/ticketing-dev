@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import { Asset } from "../../models/asset";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("has a route handler listening to /api/assets for post request", async () => {
   const response = await request(app).post("/api/assets").send({});
@@ -75,4 +76,17 @@ it("creates an asset with valid parameters", async () => {
 
   assets = await Asset.find({});
   expect(assets.length).toEqual(1);
+});
+
+it("publishes an event", async () => {
+  await request(app)
+    .post("/api/assets")
+    .set("Cookie", signin())
+    .send({
+      title: "Heartgold Pixels",
+      price: 10,
+    })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

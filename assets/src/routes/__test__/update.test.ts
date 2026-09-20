@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("returns a status of 404 if the asset is not found", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -99,4 +100,27 @@ it("updates the ticket provided valid inputs", async () => {
 
   expect(asset.body.title).toEqual("Black 2 Pixels");
   expect(asset.body.price).toEqual(15);
+});
+
+it("publishes an event", async () => {
+  const cookie = signin();
+  const response = await request(app)
+    .post("/api/assets")
+    .set("Cookie", cookie)
+    .send({
+      title: "Heartgold Pixels",
+      price: 10,
+    })
+    .expect(201);
+
+  await request(app)
+    .put(`/api/assets/${response.body.id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "Black 2 Pixels",
+      price: 15,
+    })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });

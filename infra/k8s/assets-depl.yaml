@@ -23,6 +23,8 @@ spec:
                   key: jwt_key
             - name: MONGO_URI
               value: "mongodb://assets-mongo-serv:27017/assets"
+            - name: NATS_URL
+              value: "nats://nats-serv:4222"
           resources:
             requests:
               cpu: "250m"

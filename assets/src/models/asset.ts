@@ -12,6 +12,7 @@ interface AssetDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
+  id: string;
 }
 
 // An interface that describes properties that a Asset Document has

@@ -8,6 +8,8 @@ import {
 } from "@digitalassetps/common";
 import { z } from "zod";
 import { Asset } from "../models/asset";
+import { AssetUpdatedPublisher } from "../events/publishers/asset-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const bodySchema = z.object({
   title: z.string().trim().min(1, { message: "Title cannot be empty" }),
@@ -33,6 +35,20 @@ router.put(
     });
 
     await asset.save();
+
+    const js = natsWrapper.client;
+
+    try {
+      const publisher = new AssetUpdatedPublisher(js);
+      await publisher.publish({
+        id: asset.id,
+        title: asset.title,
+        price: asset.price,
+        userId: asset.userId,
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
     res.status(201).send(asset);
   },
