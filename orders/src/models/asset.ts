@@ -4,14 +4,12 @@ import mongoose from "mongoose";
 interface AssetAttrs {
   title: string;
   price: number;
-  userId: string;
 }
 
 // An interface that describes properties that the Asset Document has
 interface AssetDoc extends mongoose.Document {
   title: string;
   price: number;
-  userId: string;
   id: string;
 }
 
@@ -28,10 +26,6 @@ const assetSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: true,
-    },
-    userId: {
-      type: String,
       required: true,
     },
   },
@@ -59,3 +53,4 @@ assetSchema.statics.build = (attrs: AssetAttrs) => {
 const Asset = mongoose.model<AssetDoc, AssetModel>("Asset", assetSchema);
 
 export { Asset };
+export type { AssetDoc };
