@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Order, OrderStatus } from "./order";
 
 // An interface that describes properties required to create a new asset
 interface AssetAttrs {
@@ -11,6 +12,7 @@ interface AssetDoc extends mongoose.Document {
   title: string;
   price: number;
   id: string;
+  isReserved(): Promise<boolean>;
 }
 
 // An interface that describes properties that a Asset Model has
@@ -48,6 +50,21 @@ const assetSchema = new mongoose.Schema(
 
 assetSchema.statics.build = (attrs: AssetAttrs) => {
   return new Asset(attrs);
+};
+
+assetSchema.methods.isReserved = async function () {
+  const existingOrder = await Order.findOne({
+    asset: this,
+    status: {
+      $in: [
+        OrderStatus.Created,
+        OrderStatus.AwaitingPayment,
+        OrderStatus.Complete,
+      ],
+    },
+  });
+
+  return !!existingOrder;
 };
 
 const Asset = mongoose.model<AssetDoc, AssetModel>("Asset", assetSchema);
