@@ -1,7 +1,8 @@
 import { connect } from "nats";
 import type { NatsConnection, JetStreamManager, JetStreamClient } from "nats";
-import { AssetStream } from "./events/streams/asset-stream";
-import { Streams } from "@digitalassetps/common";
+import { Stream } from "@digitalassetps/common";
+
+type StreamConstructor = new (jsm: JetStreamManager) => Stream;
 
 class NatsWrapper {
   private _connection?: NatsConnection;
@@ -16,19 +17,21 @@ class NatsWrapper {
     return this._js;
   }
 
-  async createStream() {
+  async createStream(StreamClass: StreamConstructor) {
     if (!this._connection) {
       throw new Error("Cannot access NATS Client before connecting");
     }
-    this._jsm = await this._connection.jetstreamManager();
-    let stream = await this._jsm.streams.get(Streams.Asset).catch(() => null);
+    this._jsm ??= await this._connection.jetstreamManager();
+    const newStream = new StreamClass(this._jsm);
 
-    if (!stream) {
-      const newStream = new AssetStream(this._jsm);
+    const existingStream = await this._jsm.streams
+      .get(newStream.name)
+      .catch(() => null);
+
+    if (!existingStream) {
       await newStream.create();
+      console.log(`Stream ${newStream.name} created`);
     }
-
-    console.log("Stream created");
   }
 
   async connect(servers: string) {

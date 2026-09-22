@@ -3,6 +3,7 @@ import { app } from "../../app";
 import mongoose from "mongoose";
 import { Asset } from "../../models/asset";
 import { Order, OrderStatus } from "../../models/order";
+import { natsWrapper } from "../../nats-wrapper";
 
 it("has a route handler listening to /api/assets for post request", async () => {
   const response = await request(app).post("/api/orders").send({});
@@ -73,4 +74,15 @@ it("reserves a ticket", async () => {
   expect(orders.length).toEqual(1);
 });
 
-it.todo("emits an order created event");
+it("emits an order created event", async () => {
+  const asset = Asset.build({ title: "Black 2 Pixels", price: 30 });
+  await asset.save();
+
+  await request(app)
+    .post("/api/orders")
+    .set("Cookie", signin())
+    .send({ assetId: asset.id })
+    .expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+});

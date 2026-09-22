@@ -12,6 +12,7 @@ import { z } from "zod";
 import { natsWrapper } from "../nats-wrapper";
 import { Order } from "../models/order";
 import { Asset } from "../models/asset";
+import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 
 const EXPIRATION_WINDOW_SECONDS = 6 * 60;
 
@@ -57,6 +58,19 @@ router.post(
     await order.save();
 
     // Publish an order.created event
+    const js = natsWrapper.client;
+    const publisher = new OrderCreatedPublisher(js);
+
+    await publisher.publish({
+      id: order.id,
+      status: OrderStatus.Created,
+      userId: order.userId,
+      asset: {
+        id: asset.id,
+        price: asset.price,
+      },
+      expiresAt: order.expiresAt.toISOString(),
+    });
 
     res.status(201).send(order);
   },
