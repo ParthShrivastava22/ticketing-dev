@@ -1,7 +1,8 @@
 export enum Subjects {
   AssetCreated = "asset.created",
   AssetUpdated = "asset.updated",
-  OrderUpdated = "order.updated",
+  OrderCreated = "order.created",
+  OrderCancelled = "order.cancelled",
 }
 
 export enum Streams {
