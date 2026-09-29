@@ -3,6 +3,7 @@ import { Order, OrderStatus } from "./order";
 
 // An interface that describes properties required to create a new asset
 interface AssetAttrs {
+  id: string;
   title: string;
   price: number;
 }
@@ -49,7 +50,11 @@ const assetSchema = new mongoose.Schema(
 );
 
 assetSchema.statics.build = (attrs: AssetAttrs) => {
-  return new Asset(attrs);
+  return new Asset({
+    _id: attrs.id,
+    title: attrs.title,
+    price: attrs.price,
+  });
 };
 
 assetSchema.methods.isReserved = async function () {

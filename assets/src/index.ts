@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { app } from "./app.js";
 import { natsWrapper } from "./nats-wrapper.js";
-import { AssetStream } from "./events/streams/asset-stream.js";
+import { AssetStream, OrderStream } from "@digitalassetps/common";
 
 const start = async () => {
   if (!process.env.JWT_KEY) throw new Error("JWT_KEY must be defined");
@@ -15,6 +15,7 @@ const start = async () => {
     try {
       await natsWrapper.connect(process.env.NATS_URL);
       await natsWrapper.createStream(AssetStream);
+      await natsWrapper.createStream(OrderStream);
       await mongoose.connect(process.env.MONGO_URI, {
         serverSelectionTimeoutMS: 5000,
         family: 4,

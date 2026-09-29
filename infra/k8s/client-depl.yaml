@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: asia-south1-docker.pkg.dev/ticketing-dev-500306/ticketing/client
+          image: asia-south2-docker.pkg.dev/asset-dev-509615/ticketing/client
           resources:
             requests:
               cpu: "250m"

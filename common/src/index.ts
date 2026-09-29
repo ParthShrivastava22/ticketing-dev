@@ -18,7 +18,9 @@ export * from "./events/base/subjects";
 
 export * from "./events/asset/asset-created-event";
 export * from "./events/asset/asset-update-event";
+export * from "./events/asset/asset-stream";
 
 export * from "./events/order/types/orders-status";
 export * from "./events/order/order-created-event";
 export * from "./events/order/order-cancelled-event";
+export * from "./events/order/order-stream";

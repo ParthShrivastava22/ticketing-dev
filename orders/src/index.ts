@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
 import { app } from "./app.js";
 import { natsWrapper } from "./nats-wrapper.js";
-import { OrderStream } from "./events/streams/order-stream.js";
+import { OrderStream, AssetStream } from "@digitalassetps/common";
+import { AssetCreatedListener } from "./events/listeners/asset-created-listener.js";
+import { AssetUpdatedListener } from "./events/listeners/asset-updated-listener.js";
 
 const start = async () => {
   if (!process.env.JWT_KEY) throw new Error("JWT_KEY must be defined");
@@ -15,10 +17,18 @@ const start = async () => {
     try {
       await natsWrapper.connect(process.env.NATS_URL);
       await natsWrapper.createStream(OrderStream);
+      await natsWrapper.createStream(AssetStream);
       await mongoose.connect(process.env.MONGO_URI, {
         serverSelectionTimeoutMS: 5000,
         family: 4,
       });
+
+      const listener = new AssetCreatedListener(
+        natsWrapper.client,
+        await natsWrapper.manager(),
+      );
+
+      await listener.listen();
       console.log("Connected to DB");
       connected = true; // Break the loop on success
     } catch (err) {

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: asia-south1-docker.pkg.dev/ticketing-dev-500306/ticketing/auth
+          image: asia-south2-docker.pkg.dev/asset-dev-509615/ticketing/auth
           env:
             - name: JWT_KEY
               valueFrom:

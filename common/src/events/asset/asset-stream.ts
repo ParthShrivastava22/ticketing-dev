@@ -1,4 +1,6 @@
-import { Stream, Streams, Subjects } from "@digitalassetps/common";
+import { Stream } from "../base/base-stream";
+import { Streams } from "../base/subjects";
+import { Subjects } from "../base/subjects";
 
 export class AssetStream extends Stream {
   name: Streams.Asset = Streams.Asset;
