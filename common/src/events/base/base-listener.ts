@@ -18,7 +18,7 @@ export abstract class Listener<T extends Event> {
 
   abstract onMessage(data: T["data"], message: JsMsg): Promise<void>;
 
-  protected ackWait = 5 * 1000;
+  protected ackWait = 5 * 1_000_000_000;
 
   constructor(js: JetStreamClient, jsm: JetStreamManager) {
     this.js = js;

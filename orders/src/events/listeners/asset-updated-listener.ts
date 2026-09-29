@@ -11,7 +11,7 @@ import { Asset } from "../../models/asset";
 export class AssetUpdatedListener extends Listener<AssetUpdatedEvent> {
   subject: Subjects.AssetUpdated = Subjects.AssetUpdated;
   streamName = Streams.Asset;
-  consumerName = "asset-updated-listener";
+  consumerName = "order-service-asset-updated";
 
   async onMessage(data: AssetUpdatedEvent["data"], message: JsMsg) {
     const { id, title, price } = data;
