@@ -23,12 +23,19 @@ const start = async () => {
         family: 4,
       });
 
-      const listener = new AssetCreatedListener(
+      const assetCreatedListener = new AssetCreatedListener(
         natsWrapper.client,
         await natsWrapper.manager(),
       );
 
-      await listener.listen();
+      const assetUpdatedListener = new AssetUpdatedListener(
+        natsWrapper.client,
+        await natsWrapper.manager(),
+      );
+
+      await assetCreatedListener.listen();
+      console.log("Listening to asset created events");
+      await assetUpdatedListener.listen();
       console.log("Connected to DB");
       connected = true; // Break the loop on success
     } catch (err) {
