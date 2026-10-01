@@ -35,7 +35,11 @@ it("returns an error if the asset does not exist", async () => {
 });
 
 it("returns an error if the asset is already reserved", async () => {
-  const asset = Asset.build({ title: "Black 2 Pixels", price: 30 });
+  const asset = Asset.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "Black 2 Pixels",
+    price: 30,
+  });
   await asset.save();
 
   const order = Order.build({
@@ -59,7 +63,11 @@ it("reserves a ticket", async () => {
   expect(assets.length).toEqual(0);
   expect(orders.length).toEqual(0);
 
-  const asset = Asset.build({ title: "Black 2 Pixels", price: 30 });
+  const asset = Asset.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "Black 2 Pixels",
+    price: 30,
+  });
   await asset.save();
 
   await request(app)
@@ -75,7 +83,11 @@ it("reserves a ticket", async () => {
 });
 
 it("emits an order created event", async () => {
-  const asset = Asset.build({ title: "Black 2 Pixels", price: 30 });
+  const asset = Asset.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title: "Black 2 Pixels",
+    price: 30,
+  });
   await asset.save();
 
   await request(app)

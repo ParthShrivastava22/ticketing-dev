@@ -39,6 +39,7 @@ router.delete(
       asset: {
         id: order.asset.id,
       },
+      version: order.version,
     });
     res.status(204).send(order);
   },

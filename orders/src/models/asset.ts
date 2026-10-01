@@ -14,11 +14,13 @@ interface AssetDoc extends mongoose.Document {
   price: number;
   id: string;
   isReserved(): Promise<boolean>;
+  version: number;
 }
 
 // An interface that describes properties that a Asset Model has
 interface AssetModel extends mongoose.Model<AssetDoc> {
   build(attrs: AssetAttrs): AssetDoc;
+  findByEvent(event: { id: string; version: number }): Promise<AssetDoc | null>;
 }
 
 const assetSchema = new mongoose.Schema(
@@ -37,15 +39,15 @@ const assetSchema = new mongoose.Schema(
       transform(doc, ret) {
         const assetRet = ret as {
           _id?: unknown;
-          __v?: number;
           id?: unknown;
         };
 
         assetRet.id = assetRet._id;
         delete assetRet._id;
-        delete assetRet.__v;
       },
     },
+    optimisticConcurrency: true,
+    versionKey: "version",
   },
 );
 
@@ -55,6 +57,10 @@ assetSchema.statics.build = (attrs: AssetAttrs) => {
     title: attrs.title,
     price: attrs.price,
   });
+};
+
+assetSchema.statics.findByEvent = (event: { id: string; version: number }) => {
+  return Asset.findOne({ _id: event.id, version: event.version - 1 });
 };
 
 assetSchema.methods.isReserved = async function () {

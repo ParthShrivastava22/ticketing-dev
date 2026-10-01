@@ -14,9 +14,9 @@ export class AssetUpdatedListener extends Listener<AssetUpdatedEvent> {
   consumerName = "order-service-asset-updated";
 
   async onMessage(data: AssetUpdatedEvent["data"], message: JsMsg) {
-    const { id, title, price } = data;
+    const { title, price } = data;
 
-    const asset = await Asset.findById(id);
+    const asset = await Asset.findByEvent(data);
     if (!asset) throw new NotFoundError();
 
     asset.set({ title, price });

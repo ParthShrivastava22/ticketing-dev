@@ -70,6 +70,7 @@ router.post(
         price: asset.price,
       },
       expiresAt: order.expiresAt.toISOString(),
+      version: order.version,
     });
 
     res.status(201).send(order);

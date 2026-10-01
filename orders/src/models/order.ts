@@ -16,6 +16,7 @@ interface OrderDoc extends mongoose.Document {
   asset: AssetDoc;
   expiresAt: Date;
   status: OrderStatus;
+  version: number;
   id: string;
 }
 
@@ -51,15 +52,15 @@ const orderSchema = new mongoose.Schema(
       transform(doc, ret) {
         const orderRet = ret as {
           _id?: unknown;
-          __v?: number;
           id?: unknown;
         };
 
         orderRet.id = orderRet._id;
         delete orderRet._id;
-        delete orderRet.__v;
       },
     },
+    optimisticConcurrency: true,
+    versionKey: "version",
   },
 );
 

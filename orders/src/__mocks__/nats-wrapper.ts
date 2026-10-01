@@ -1,4 +1,4 @@
-import type { JetStreamClient } from "nats";
+import type { JetStreamClient, JetStreamManager } from "nats";
 
 export const natsWrapper = {
   client: {
@@ -7,4 +7,10 @@ export const natsWrapper = {
       seq: 1,
     }),
   } as unknown as JetStreamClient,
+
+  manager: jest.fn().mockResolvedValue({
+    streams: {
+      add: jest.fn(),
+    },
+  } as unknown as JetStreamManager),
 };
