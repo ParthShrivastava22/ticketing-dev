@@ -8,9 +8,9 @@ interface Event {
 }
 
 export abstract class Listener<T extends Event> {
-  private js: JetStreamClient;
-  private jsm: JetStreamManager;
-  private jc: Codec<JSON>;
+  protected js: JetStreamClient;
+  protected jsm: JetStreamManager;
+  protected jc: Codec<JSON>;
 
   abstract streamName: Streams;
   abstract subject: T["subject"];

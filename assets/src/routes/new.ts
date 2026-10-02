@@ -35,6 +35,7 @@ router.post(
       title: asset.title,
       price: asset.price,
       userId: asset.userId,
+      version: asset.version,
     });
 
     res.status(201).send(asset);

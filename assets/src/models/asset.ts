@@ -13,6 +13,8 @@ interface AssetDoc extends mongoose.Document {
   price: number;
   userId: string;
   id: string;
+  version: number;
+  orderId?: string;
 }
 
 // An interface that describes properties that a Asset Model has
@@ -34,21 +36,25 @@ const assetSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    orderId: {
+      type: String,
+      default: null,
+    },
   },
   {
     toJSON: {
       transform(doc, ret) {
         const assetRet = ret as {
           _id?: unknown;
-          __v?: number;
           id?: unknown;
         };
 
         assetRet.id = assetRet._id;
         delete assetRet._id;
-        delete assetRet.__v;
       },
     },
+    optimisticConcurrency: true,
+    versionKey: "version",
   },
 );
 

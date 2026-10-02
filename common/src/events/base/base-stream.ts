@@ -5,7 +5,7 @@ export abstract class Stream {
   abstract name: Streams;
   abstract subjects: Subjects[];
 
-  private jsm: JetStreamManager;
+  protected jsm: JetStreamManager;
 
   constructor(jsm: JetStreamManager) {
     this.jsm = jsm;

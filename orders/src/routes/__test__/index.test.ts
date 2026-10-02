@@ -1,9 +1,14 @@
 import request from "supertest";
 import { app } from "../../app";
 import { Asset } from "../../models/asset";
+import mongoose from "mongoose";
 
 const createAsset = async (title: string, price: number) => {
-  const asset = Asset.build({ title, price });
+  const asset = Asset.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    title,
+    price,
+  });
   await asset.save();
   return asset;
 };

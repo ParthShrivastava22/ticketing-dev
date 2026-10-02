@@ -7,5 +7,6 @@ export interface AssetCreatedEvent {
     title: string;
     price: number;
     userId: string;
+    version: number;
   };
 }

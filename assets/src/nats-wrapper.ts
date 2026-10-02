@@ -13,8 +13,20 @@ class NatsWrapper {
     if (!this._connection) {
       throw new Error("Cannot access NATS Client before connecting");
     }
-    this._js = this._connection.jetstream();
+
+    this._js ??= this._connection.jetstream();
+
     return this._js;
+  }
+
+  async manager() {
+    if (!this._connection) {
+      throw new Error("Cannot access NATS Manager before connecting");
+    }
+
+    this._jsm ??= await this._connection.jetstreamManager();
+
+    return this._jsm;
   }
 
   async createStream(StreamClass: StreamConstructor) {

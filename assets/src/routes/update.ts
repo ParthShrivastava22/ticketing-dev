@@ -45,6 +45,7 @@ router.put(
         title: asset.title,
         price: asset.price,
         userId: asset.userId,
+        version: asset.version,
       });
     } catch (err) {
       console.log(err);
