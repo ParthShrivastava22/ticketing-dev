@@ -3,6 +3,7 @@ export enum Subjects {
   AssetUpdated = "asset.updated",
   OrderCreated = "order.created",
   OrderCancelled = "order.cancelled",
+  ExpirationComplete = "expiration.complete",
 }
 
 export enum Streams {
