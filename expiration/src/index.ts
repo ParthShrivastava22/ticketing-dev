@@ -1,19 +1,35 @@
 import { natsWrapper } from "./nats-wrapper.js";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener.js";
+import { OrderStream } from "@digitalassetps/common";
 
 const start = async () => {
-  if (!process.env.NATS_URL) throw new Error("NATS_URL must be defined");
+  if (!process.env.NATS_URL) {
+    throw new Error("NATS_URL must be defined");
+  }
 
   let connected = false;
 
-  // Keep trying until MongoDB finishes booting
+  // Keep trying until NATS is available
   while (!connected) {
     try {
       await natsWrapper.connect(process.env.NATS_URL);
+      await natsWrapper.createStream(OrderStream);
+
+      connected = true;
     } catch (err) {
-      console.log("NATS or MongoDB not ready yet. Retrying in 5 seconds...");
+      console.log("NATS not ready yet. Retrying in 5 seconds...");
+
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   }
+
+  const orderCreatedListener = new OrderCreatedListener(
+    natsWrapper.client,
+    await natsWrapper.manager(),
+  );
+
+  // Long-running listener
+  orderCreatedListener.listen();
 
   const shutdown = async () => {
     await natsWrapper.close();

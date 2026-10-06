@@ -5,6 +5,7 @@ import {
   validateRequest,
   NotAuthorizedError,
   NotFoundError,
+  BadRequestError,
 } from "@digitalassetps/common";
 import { z } from "zod";
 import { Asset } from "../models/asset";
@@ -29,6 +30,9 @@ router.put(
 
     if (asset.userId !== req.currentUser!.id) throw new NotAuthorizedError();
 
+    if (asset.orderId)
+      throw new BadRequestError("Asset has been reserved, cannot edit it");
+
     asset.set({
       title: req.body.title,
       price: req.body.price,
@@ -46,6 +50,7 @@ router.put(
         price: asset.price,
         userId: asset.userId,
         version: asset.version,
+        orderId: asset.orderId,
       });
     } catch (err) {
       console.log(err);

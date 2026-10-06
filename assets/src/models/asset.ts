@@ -14,7 +14,7 @@ interface AssetDoc extends mongoose.Document {
   userId: string;
   id: string;
   version: number;
-  orderId?: string;
+  orderId: string | undefined;
 }
 
 // An interface that describes properties that a Asset Model has
@@ -38,7 +38,6 @@ const assetSchema = new mongoose.Schema(
     },
     orderId: {
       type: String,
-      default: null,
     },
   },
   {

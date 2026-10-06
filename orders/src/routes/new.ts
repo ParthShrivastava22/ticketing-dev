@@ -14,7 +14,7 @@ import { Order } from "../models/order";
 import { Asset } from "../models/asset";
 import { OrderCreatedPublisher } from "../events/publishers/order-created-publisher";
 
-const EXPIRATION_WINDOW_SECONDS = 6 * 60;
+const EXPIRATION_WINDOW_SECONDS = 1 * 60;
 
 const router = express.Router();
 

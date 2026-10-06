@@ -7,6 +7,7 @@ import {
 } from "@digitalassetps/common";
 import type { JsMsg } from "nats";
 import { Asset } from "../../models/asset";
+import { AssetUpdatedPublisher } from "../publishers/asset-updated-publisher";
 
 export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
   subject: Subjects.OrderCreated = Subjects.OrderCreated;
@@ -19,6 +20,14 @@ export class OrderCreatedListener extends Listener<OrderCreatedEvent> {
 
     asset.set({ orderId: data.id });
     await asset.save();
+    await new AssetUpdatedPublisher(this.js).publish({
+      id: asset.id,
+      title: asset.title,
+      price: asset.price,
+      userId: asset.userId,
+      orderId: asset.orderId,
+      version: asset.version,
+    });
 
     message.ack();
   }

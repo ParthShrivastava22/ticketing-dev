@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
 import { natsWrapper } from "../../nats-wrapper";
+import { Asset } from "../../models/asset";
 
 it("returns a status of 404 if the asset is not found", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
@@ -123,4 +124,30 @@ it("publishes an event", async () => {
     .expect(201);
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+
+it("rejects updates if the asset is reserved", async () => {
+  const cookie = signin();
+
+  const response = await request(app)
+    .post("/api/assets")
+    .set("Cookie", cookie)
+    .send({
+      title: "Heartgold Pixels",
+      price: 10,
+    })
+    .expect(201);
+
+  const asset = await Asset.findById(response.body.id);
+  asset?.set({ orderId: new mongoose.Types.ObjectId().toHexString() });
+  await asset?.save();
+
+  await request(app)
+    .put(`/api/assets/${response.body.id}`)
+    .set("Cookie", cookie)
+    .send({
+      title: "Black 2 Pixels",
+      price: 15,
+    })
+    .expect(400);
 });

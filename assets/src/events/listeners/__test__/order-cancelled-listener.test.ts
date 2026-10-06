@@ -1,17 +1,11 @@
-import { OrderCreatedListener } from "../order-created-listener";
+import { OrderCancelledListener } from "../order-cancelled-listener";
+import { OrderCancelledEvent } from "@digitalassetps/common";
 import { natsWrapper } from "../../../nats-wrapper";
-import {
-  OrderCreatedEvent,
-  AssetUpdatedEvent,
-  OrderStatus,
-} from "@digitalassetps/common";
 import { Asset } from "../../../models/asset";
-import { JsMsg } from "nats";
 import mongoose from "mongoose";
-import { JSONCodec } from "nats";
 
 const setup = async () => {
-  const listener = new OrderCreatedListener(
+  const listener = new OrderCancelledListener(
     natsWrapper.client,
     await natsWrapper.manager(),
   );
@@ -23,16 +17,12 @@ const setup = async () => {
   });
   await asset.save();
 
-  const data: OrderCreatedEvent["data"] = {
+  const data: OrderCancelledEvent["data"] = {
     id: new mongoose.Types.ObjectId().toHexString(),
-    status: OrderStatus.Created,
-    userId: new mongoose.Types.ObjectId().toHexString(),
     version: 0,
     asset: {
       id: asset.id,
-      price: asset.price,
     },
-    expiresAt: "inshallah",
   };
 
   // @ts-ignore
@@ -43,15 +33,13 @@ const setup = async () => {
   return { listener, data, message, asset };
 };
 
-it("sets userId for the asset", async () => {
+it("updates the asset", async () => {
   const { message, asset, data, listener } = await setup();
   await listener.onMessage(data, message);
 
   const updatedAsset = await Asset.findById(asset.id);
 
-  expect(updatedAsset!.orderId).toBeDefined();
-  expect(updatedAsset!.orderId).not.toBeNull();
-  expect(updatedAsset!.orderId).toEqual(data.id);
+  expect(updatedAsset!.orderId).not.toBeDefined();
 });
 
 it("acknowledges the message", async () => {
@@ -61,16 +49,9 @@ it("acknowledges the message", async () => {
   expect(message.ack).toHaveBeenCalled();
 });
 
-it("publishes a ticket updated event", async () => {
+it("publishes an event", async () => {
   const { message, data, listener } = await setup();
   await listener.onMessage(data, message);
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
-
-  const js = JSONCodec();
-  const assetUpdatedData = js.decode(
-    (natsWrapper.client.publish as jest.Mock).mock.calls[0][1],
-  ) as AssetUpdatedEvent["data"];
-
-  expect(data.id).toEqual(assetUpdatedData.orderId);
 });
