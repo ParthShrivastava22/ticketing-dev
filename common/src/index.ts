@@ -31,3 +31,4 @@ export * from "./events/order/order-stream";
 
 // Expiration Events
 export * from "./events/expiration/expiration-complete-event";
+export * from "./events/expiration/expiration-stream";

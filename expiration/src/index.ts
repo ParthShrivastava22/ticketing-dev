@@ -1,6 +1,6 @@
 import { natsWrapper } from "./nats-wrapper.js";
 import { OrderCreatedListener } from "./events/listeners/order-created-listener.js";
-import { OrderStream } from "@digitalassetps/common";
+import { OrderStream, ExpirationStream } from "@digitalassetps/common";
 
 const start = async () => {
   if (!process.env.NATS_URL) {
@@ -14,10 +14,12 @@ const start = async () => {
     try {
       await natsWrapper.connect(process.env.NATS_URL);
       await natsWrapper.createStream(OrderStream);
+      await natsWrapper.createStream(ExpirationStream);
 
       connected = true;
     } catch (err) {
       console.log("NATS not ready yet. Retrying in 5 seconds...");
+      console.log(err);
 
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }

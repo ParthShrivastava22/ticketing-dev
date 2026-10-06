@@ -9,4 +9,5 @@ export enum Subjects {
 export enum Streams {
   Asset = "ASSET",
   Order = "ORDER",
+  Expiration = "EXPIRATION",
 }
