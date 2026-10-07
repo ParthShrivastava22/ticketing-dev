@@ -58,7 +58,13 @@ const orderSchema = new mongoose.Schema(
 );
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
-  return new Order(attrs);
+  return new Order({
+    _id: attrs.id,
+    userId: attrs.userId,
+    status: attrs.status,
+    price: attrs.price,
+    version: attrs.version,
+  });
 };
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);
