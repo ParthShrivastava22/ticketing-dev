@@ -27,6 +27,7 @@ const setup = async () => {
     price: 30,
     userId: new mongoose.Types.ObjectId().toHexString(),
     version: asset.version + 1,
+    orderId: new mongoose.Types.ObjectId().toHexString(),
   };
 
   // create a fake message object

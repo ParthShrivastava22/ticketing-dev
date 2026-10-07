@@ -49,7 +49,7 @@ it("acknowledges the message", async () => {
   expect(message.ack).toHaveBeenCalled();
 });
 
-it("publishes an event", async () => {
+it("publishes order cancelled event", async () => {
   const { message, data, listener } = await setup();
   await listener.onMessage(data, message);
 

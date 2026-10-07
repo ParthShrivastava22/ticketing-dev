@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 import { app } from "./app.js";
 import { natsWrapper } from "./nats-wrapper.js";
-import { OrderStream, AssetStream } from "@digitalassetps/common";
+import {
+  OrderStream,
+  AssetStream,
+  ExpirationStream,
+} from "@digitalassetps/common";
 import { AssetCreatedListener } from "./events/listeners/asset-created-listener.js";
 import { AssetUpdatedListener } from "./events/listeners/asset-updated-listener.js";
+import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener.js";
 
 const start = async () => {
   if (!process.env.JWT_KEY) throw new Error("JWT_KEY must be defined");
@@ -18,6 +23,7 @@ const start = async () => {
       await natsWrapper.connect(process.env.NATS_URL);
       await natsWrapper.createStream(OrderStream);
       await natsWrapper.createStream(AssetStream);
+      await natsWrapper.createStream(ExpirationStream);
 
       await mongoose.connect(process.env.MONGO_URI, {
         serverSelectionTimeoutMS: 5000,
@@ -46,9 +52,15 @@ const start = async () => {
     await natsWrapper.manager(),
   );
 
+  const expirationCompleteListener = new ExpirationCompleteListener(
+    natsWrapper.client,
+    await natsWrapper.manager(),
+  );
+
   // Start them concurrently
   assetCreatedListener.listen();
   assetUpdatedListener.listen();
+  expirationCompleteListener.listen();
 
   const server = app.listen(3000, () => {
     console.log("Listening on port 3000");
