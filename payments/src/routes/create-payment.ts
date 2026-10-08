@@ -6,9 +6,9 @@ import {
   validateRequest,
   NotAuthorizedError,
   NotFoundError,
+  BadRequestError,
 } from "@digitalassetps/common";
-
-import { Order } from "../models/order";
+import { Order, OrderStatus } from "../models/order";
 
 const router = express.Router();
 
@@ -22,8 +22,15 @@ router.post(
   "/api/payments",
   requireAuth,
   validateRequest(bodySchema),
-  (req, res) => {
-    const [orderId] = req.body;
+  async (req: Request, res: Response) => {
+    const { orderId } = req.body;
+
+    const order = await Order.findById(orderId);
+
+    if (!order) throw new NotFoundError();
+    if (order.userId !== req.currentUser!.id) throw new NotAuthorizedError();
+    if (order.status === OrderStatus.Cancelled)
+      throw new BadRequestError("The order is cancelled, can't pay for it");
 
     res.send({ success: true });
   },
