@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import { app } from "./app.js";
 import { natsWrapper } from "./nats-wrapper.js";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener.js";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener.js";
+import { OrderStream } from "@digitalassetps/common";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -21,6 +24,7 @@ const start = async () => {
   while (!connected) {
     try {
       await natsWrapper.connect(process.env.NATS_URL);
+      await natsWrapper.createStream(OrderStream);
 
       await mongoose.connect(process.env.MONGO_URI, {
         serverSelectionTimeoutMS: 5000,
@@ -35,6 +39,22 @@ const start = async () => {
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   }
+
+  // Create listeners after infrastructure is ready
+  const orderCreatedListener = new OrderCreatedListener(
+    natsWrapper.client,
+    await natsWrapper.manager(),
+  );
+
+  const orderCancelledListener = new OrderCancelledListener(
+    natsWrapper.client,
+    await natsWrapper.manager(),
+  );
+
+  // Start listeners.
+  // These are long-running processes, so don't await them here.
+  orderCreatedListener.listen();
+  orderCancelledListener.listen();
 
   // Start HTTP server
   const server = app.listen(3000, () => {

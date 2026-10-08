@@ -6,6 +6,7 @@ import {
   NotFoundError,
   currentUser,
 } from "@digitalassetps/common";
+import { createPaymentRouter } from "./routes/create-payment";
 
 const app = express();
 app.set("trust proxy", true);
@@ -19,6 +20,7 @@ app.use(
 );
 
 app.use(currentUser);
+app.use(createPaymentRouter);
 
 app.all("/{*splat}", async (req, res) => {
   throw new NotFoundError();
