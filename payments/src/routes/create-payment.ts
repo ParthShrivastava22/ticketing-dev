@@ -9,6 +9,7 @@ import {
   BadRequestError,
 } from "@digitalassetps/common";
 import { Order, OrderStatus } from "../models/order";
+import { stripe } from "../stripe";
 
 const router = express.Router();
 
@@ -32,7 +33,23 @@ router.post(
     if (order.status === OrderStatus.Cancelled)
       throw new BadRequestError("The order is cancelled, can't pay for it");
 
-    res.send({ success: true });
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(order.price * 100),
+      currency: "usd",
+      confirm: true,
+      payment_method: "pm_card_visa",
+      allowed_payment_method_types: ["card"],
+      metadata: {
+        orderId: order.id,
+        userId: order.userId,
+      },
+    });
+
+    if (paymentIntent.status !== "succeeded") {
+      throw new BadRequestError("Payment has not succeeded");
+    }
+
+    res.status(201).send({ success: true });
   },
 );
 

@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
 import { Order, OrderStatus } from "../../models/order";
+import { stripe } from "../../stripe";
 
 it("returns a 404 when purchasing order that does not exist", async () => {
   await request(app)
@@ -52,4 +53,37 @@ it("returns a 400 when purchasing a cancelled order", async () => {
       orderId: order.id,
     })
     .expect(400);
+});
+
+it("returns a 204 with valid inputs", async () => {
+  const id = new mongoose.Types.ObjectId().toHexString();
+  const cookie = signin(id);
+
+  const order = Order.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
+    userId: id,
+    status: OrderStatus.Created,
+    version: 0,
+    price: 20,
+  });
+  await order.save();
+
+  await request(app)
+    .post("/api/payments")
+    .set("Cookie", cookie)
+    .send({
+      orderId: order.id,
+    })
+    .expect(201);
+
+  const paymentIntents = await stripe.paymentIntents.list({ limit: 10 });
+
+  const paymentIntent = paymentIntents.data.find(
+    (intent) => intent.metadata.orderId === order.id,
+  );
+
+  expect(paymentIntent).toBeDefined();
+  expect(paymentIntent!.amount).toBe(2000);
+  expect(paymentIntent!.currency).toBe("usd");
+  expect(paymentIntent!.status).toBe("succeeded");
 });
