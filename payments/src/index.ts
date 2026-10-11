@@ -3,7 +3,7 @@ import { app } from "./app.js";
 import { natsWrapper } from "./nats-wrapper.js";
 import { OrderCreatedListener } from "./events/listeners/order-created-listener.js";
 import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener.js";
-import { OrderStream } from "@digitalassetps/common";
+import { OrderStream, PaymentStream } from "@digitalassetps/common";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -25,6 +25,7 @@ const start = async () => {
     try {
       await natsWrapper.connect(process.env.NATS_URL);
       await natsWrapper.createStream(OrderStream);
+      await natsWrapper.createStream(PaymentStream);
 
       await mongoose.connect(process.env.MONGO_URI, {
         serverSelectionTimeoutMS: 5000,

@@ -9,6 +9,7 @@ import {
 import { AssetCreatedListener } from "./events/listeners/asset-created-listener.js";
 import { AssetUpdatedListener } from "./events/listeners/asset-updated-listener.js";
 import { ExpirationCompleteListener } from "./events/listeners/expiration-complete-listener.js";
+import { PaymentCreatedListener } from "./events/listeners/payment-created-listener.js";
 
 const start = async () => {
   if (!process.env.JWT_KEY) throw new Error("JWT_KEY must be defined");
@@ -57,10 +58,16 @@ const start = async () => {
     await natsWrapper.manager(),
   );
 
+  const paymentCreatedListener = new PaymentCreatedListener(
+    natsWrapper.client,
+    await natsWrapper.manager(),
+  );
+
   // Start them concurrently
   assetCreatedListener.listen();
   assetUpdatedListener.listen();
   expirationCompleteListener.listen();
+  paymentCreatedListener.listen();
 
   const server = app.listen(3000, () => {
     console.log("Listening on port 3000");
