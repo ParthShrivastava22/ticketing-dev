@@ -3,6 +3,7 @@ import {
   ExpirationCompleteEvent,
   Subjects,
   Streams,
+  BadRequestError,
 } from "@digitalassetps/common";
 import type { JsMsg } from "nats";
 import { Order, OrderStatus } from "../../models/order";
@@ -17,6 +18,7 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
   async onMessage(data: ExpirationCompleteEvent["data"], message: JsMsg) {
     const order = await Order.findById(data.orderId).populate("asset");
     if (!order) throw new NotFoundError();
+    if (order.status === OrderStatus.Complete) return message.ack();
 
     order.status = OrderStatus.Cancelled;
     await order.save();
