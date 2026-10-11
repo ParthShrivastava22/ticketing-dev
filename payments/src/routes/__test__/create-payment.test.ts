@@ -3,6 +3,7 @@ import { app } from "../../app";
 import mongoose from "mongoose";
 import { Order, OrderStatus } from "../../models/order";
 import { stripe } from "../../stripe";
+import { Payment } from "../../models/payment";
 
 it("returns a 404 when purchasing order that does not exist", async () => {
   await request(app)
@@ -86,4 +87,11 @@ it("returns a 204 with valid inputs", async () => {
   expect(paymentIntent!.amount).toBe(2000);
   expect(paymentIntent!.currency).toBe("usd");
   expect(paymentIntent!.status).toBe("succeeded");
+
+  const payment = await Payment.findOne({
+    orderId: order.id,
+    paymentIntentId: paymentIntent!.id,
+  });
+
+  expect(payment).not.toBeNull();
 });

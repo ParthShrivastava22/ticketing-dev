@@ -10,6 +10,7 @@ import {
 } from "@digitalassetps/common";
 import { Order, OrderStatus } from "../models/order";
 import { stripe } from "../stripe";
+import { Payment } from "../models/payment";
 
 const router = express.Router();
 
@@ -48,6 +49,13 @@ router.post(
     if (paymentIntent.status !== "succeeded") {
       throw new BadRequestError("Payment has not succeeded");
     }
+
+    const payment = Payment.build({
+      orderId,
+      paymentIntentId: paymentIntent.id,
+    });
+
+    await payment.save();
 
     res.status(201).send({ success: true });
   },
